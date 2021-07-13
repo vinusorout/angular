@@ -1,7 +1,7 @@
 # angular
 Angular Personal Learning
 
-## Parent to child interation:
+## Parent to child OR Child to parent interation:
 https://angular.io/guide/component-interaction
 
 ### Intercept input property changes with a setter
