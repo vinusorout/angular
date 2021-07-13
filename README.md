@@ -92,6 +92,8 @@ ngOnChanges(changes: SimpleChanges): void {
 ```
 
 
+### Child to Parent should be done using EventEmmiters
+
 
 
 
