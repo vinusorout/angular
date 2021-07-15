@@ -120,6 +120,51 @@ calChildMethod() {
 }
 ```
 
+### Using @ViewChild to inject a reference to a DOM element
+Instead of injecting a direct child component, we might want to interact directly with a plain HTML element of the template.
+
+In order to do that, we need to first assign a template reference to the HTML tag that we want to inject. for eaxmple #fullScreen:
+```htm
+<div #fullScreen>
+</div>
+```
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html'
+})
+export class AppComponent implements  AfterViewInit {
+  .....
+  
+  @ViewChild('fullScreen') fullScreen: ElementRef;
+
+  ngAfterViewInit() {
+    console.log('Values on ngAfterViewInit():');
+    console.log("title:", this.fullScreen.nativeElement);
+  }
+  openFullscreen() {
+        const fullScreen = this.fullScreen?.nativeElement;
+
+        if (fullScreen.requestFullscreen) {
+            fullScreen.requestFullscreen();
+        } else if (fullScreen.msRequestFullscreen) {
+            fullScreen.msRequestFullscreen();
+        } else if (fullScreen.mozRequestFullScreen) {
+            fullScreen.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullscreen) {
+            fullScreen.webkitRequestFullscreen();
+        }
+    }
+  .....
+}
+```ts
+
+```
+
+
+
+
+
+
 
 
 
