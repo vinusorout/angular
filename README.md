@@ -128,6 +128,8 @@ In order to do that, we need to first assign a template reference to the HTML ta
 <div #fullScreen>
 </div>
 ```
+
+```ts
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html'
@@ -156,8 +158,6 @@ export class AppComponent implements  AfterViewInit {
     }
   .....
 }
-```ts
-
 ```
 
 
