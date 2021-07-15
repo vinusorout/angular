@@ -4,6 +4,9 @@ Angular Personal Learning
 ## Parent to child OR Child to parent interation:
 https://angular.io/guide/component-interaction
 
+### @Input in child
+If you update the parent property, and that property is assigned to child inout paraneter, then if you update the parent then the child will also update.
+
 ### Intercept input property changes with a setter
 se an input property setter to intercept and act upon a value from the parent.
 Child:
@@ -93,6 +96,30 @@ ngOnChanges(changes: SimpleChanges): void {
 
 
 ### Child to Parent should be done using EventEmmiters
+
+### Call child functions from Parent using ViewChild.
+```js
+import { ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ChildComponent } from './child.component';
+
+@Component({
+  selector: 'parent-part',
+  templateUrl: './parent.component.html',
+  styleUrls: ['./parent.component.css']
+})
+
+export class ParentnComponent implements OnInit {
+@ViewChild(ChildComponent) child: ChildComponent | undefined;
+constructor() { }
+
+calChildMethod() {
+    this.child.childMethod();
+}
+
+}
+```
+
 
 
 
