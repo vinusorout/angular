@@ -1,6 +1,44 @@
 # angular
 Angular Personal Learning
 
+## Services
+* Injectable need to know where to make the class available, like root of the application or feature module
+* And a token, the class name is used as Token.
+```ts
+@Injectable({
+	providedIn: 'root' // at root level, singleton instance
+})
+export class Storage {
+}
+```
+* if you need to change the token:
+```ts
+@Injectable({
+	providedIn: 'root', // at root level, singleton instance,
+	useClass: OtherStorage // change the token
+})
+export class Storage {
+}
+```
+* to scope a service to a feature module:
+```ts
+@Injectable({
+	providedIn: MyModule // feature module name
+})
+export class Storage {
+}
+```
+* lazy loading is better when service provideIn with feature module
+* To inject service in any module with a **different instance**
+```ts
+@Injectable({
+	providedIn: 'any' // feature module name
+})
+export class Storage {
+}
+```
+
+
 ## Parent to child OR Child to parent interation:
 https://angular.io/guide/component-interaction
 
@@ -176,6 +214,95 @@ export class AppComponent implements OnInit {
 ```
 
 ## Importants
+
+### ExpressionChangesAfterItHasBeenCheckedError
+* Occured when a value was modified AFTER change detection finished.
+* Potential causes:
+* Code update after ngAfterViewInit
+```ts
+ngAfterViewInit() {
+	this.loading = false; // will throw this error
+}
+```
+```html
+<span *ngIf="loading">Show Me!</span>
+```
+
+What if you have to update the value in After View, let say you need to update it as per the any item, and that will be avilable only after  ngAfterViewInit, use either settime out or promise, this will make angular the detect the change in next change detection cycle.
+
+```ts
+
+@ViewChild('item') item;
+ngAfterViewInit() {
+	if(item) {
+		Promise.resolve().then(() => this.loading = false;  )
+	}
+}
+```
+```html
+<span *ngIf="loading">Show Me!</span>
+```
+
+Or by manually enable change detection:
+```ts
+constructor(private cd: ChangeDetectorRef) {}
+ngAfterViewInit() {
+	this.loading = false; 
+	this.cd.detectChanges();
+}
+```
+```html
+<span *ngIf="loading">Show Me!</span>
+```
+
+
+* When change detection trigger itself in infinite loop, like a method that return diff value each time
+```ts
+get randomValue() {
+	return Math.random();
+}
+```
+```html
+<p> This is a {{ randomValue }}</p>
+```
+* Or when child component tries to update Parent properties
+Change detection runs from Parent to Child, first Parent then first level child then second level and so on...
+
+Parent Component:
+```ts
+export class AppComponnet implements AfterViewInit {
+	loading = true;
+	ngAfterViewInit() {
+	}
+}
+```
+
+Child Component:
+```ts
+export class ChildComponent implements OnInit {
+	@Output() ready = new EvevntEmmiter();
+	ngOnInit() {
+		this.ready.emit(true);
+	}
+}
+```
+Parent Template:
+```html
+<span *ngIf="loading">Show Me!</span>
+<app-item (ready)="loading = false"></app-item>
+```
+
+To solve this move the code to a shared service.
+
+### Cant bind to {prop} since it isnt a known property of {node}
+
+```html
+<my-component [name]> </my-component> // when name is not a attribute or property of my component, missing @input
+```
+
+### Multiple components match node with tagname {selector}
+
+
 
 ### Angular Zone
 
