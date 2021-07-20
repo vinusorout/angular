@@ -420,6 +420,92 @@ export class HighlightDirective {
 ## UNIT TESTING
 
 ### Service with HttpClient:
+```ts
+import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { MyService } from './my.service';
+import { CommonService } from '../common.service';
+import { Observable, of } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import { MyData } from '../../model/mydata.model';
+import { AppConstants } from 'src/app/app.constants';
+
+let mockCommonService: Partial<CommonService>;
+
+describe('MyService', () => {
+  let service: MyService;
+  let httpMock: HttpTestingController;
+  let commonService: CommonService;
+
+  beforeEach(() => {
+    mockCommonService = {
+      handleError(error: HttpErrorResponse): Observable<never> {
+        console.log('Error handled');
+        return of();
+      },
+      getbaseUrl() {
+        return 'http://abc.com/';
+      }
+    };
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [
+        MyService,
+        { provide: CommonService, useValue: mockCommonService }
+      ]
+    });
+    service = TestBed.inject(MyService);
+    commonService = TestBed.inject(CommonService);
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpMock.verify();
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+
+  it('get my data success', () => {
+    const myData: Partial<MyData>[] = [
+      { Id: 1 }
+    ];
+
+    service.getMyData().subscribe(result => {
+      expect(result.length).toBe(1);
+      expect(result[0].Id).toEqual(1);
+    }, error => {
+      expect(true).toBe(false);
+    });
+
+    const req = httpMock.expectOne(`http://abc.com/` + AppConstants.MyData_URL);
+    expect(req.request.method).toBe('GET');
+    req.flush(myData);
+
+  });
+
+  it('get mydata faliure', () => {
+
+    service.getMyData().subscribe(result => {
+      expect(true).toBe(false);
+    }, error => {
+      expect(true).toBe(true);
+      expect(commonService.handleError).toHaveBeenCalled();
+    });
+
+    const req = httpMock.expectOne(`http://abc.com/` + AppConstants.MyData_URL);
+    expect(req.request.method).toBe('GET');
+
+    // const errorEvent: ErrorEvent = new ErrorEvent('Not Found');
+    // req.error(errorEvent);
+    // or
+    req.flush(null, { status: 400, statusText: 'Bad Request' });
+
+  });
+});
+
+```
 
 
 
