@@ -413,8 +413,33 @@ export class HighlightDirective {
 ```
 * If you apply ngNonBindable to a parent element, Angular disables interpolation and binding of any sort, such as property binding or event binding, for the element's children.
 
+## Structural Directive, like *ngIf
+https://angular.io/guide/structural-directives
+
 
 ## ngTemplate and ngContent
+* Used for creating Dynamic Template Creation
+* **ng-template** : Like the name indicates, the ng-template directive represents an Angular template: this means that the content of this tag will contain part of a template, that can be then be composed together with other templates in order to form the final component template
+* Angular is already using ng-template under the hood in many of the structural directives that we use all the time: ngIf, ngFor and ngSwitch.
+```ts
+@Component({
+  selector: 'app-root',
+  template: `      
+<ng-template #estimateTemplate let-lessonsCounter="estimate">
+    <div> Approximately {{lessonsCounter}} lessons ...</div>
+</ng-template>
+<ng-container 
+	[ngTemplateOutlet]="estimateTemplate"
+   	[ngTemplateOutletContext]="{ $implicit: ctx }">
+</ng-container>
+`})
+export class AppComponent {
+
+    totalEstimate = 10;
+    ctx = {estimate: this.totalEstimate};
+  
+}
+```
 
 
 ## UNIT TESTING
