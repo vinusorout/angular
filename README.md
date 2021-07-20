@@ -520,7 +520,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { Observable } from 'rxjs/internal/Observable';
 import { of } from 'rxjs/internal/observable/of';
-import { MyService } from 'src/app/shared/services/facility/facility.service';
+import { MyService } from 'src/app/shared/my.service';
 
 import { MyComponent } from './my.component';
   // My Service
