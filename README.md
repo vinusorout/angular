@@ -175,6 +175,97 @@ export class AppComponent implements OnInit {
 }
 ```
 
+## Importants
+
+### Angular Zone
+
+Angular Zone: Angular error handler runs out of angular zone, if you initiate a material pop-up from error handler, it will not close, using the close button. To close it first you need to initiate the pop-up using zone, only than you can close it.
+
+* NZZone injected in component and then use. this.ngzonevariable.runOutsideAngula.
+
+### PURE and IMPURE Pipes, https://indepth.dev/posts/1447/how-pure-and-impure-pipes-work-in-angular-ivy
+* Impure pipes's transform function, runs every time any change is detected on the page
+* Pure pipes's transform function, runs only when its own data value changed
+```ts
+	@Pipe({
+	  name: 'myCustomPipe', 
+	  pure: false/true        <----- here (default is `true`)
+	})
+export class MyCustomPipe {}
+```
+```html
+<span>{{v1 | customPipe}}</span>
+<span>{{v2 | customPipe}}</span>
+
+// pass parameters to a pipe:
+<span>{{v1 | customPipe:param1:param2}}</span>
+```
+* Since the pipe is pure it means that there’s no internal state and the pipe can be shared. How can Angular leverage that? **Even though there are two usages in the template Angular can create only one pipe instance which can be shared between the usages**.
+* A good example of impure pipe is the AsyncPipe from @angular/common package. This pipe has internal state that holds an underlying subscription created by subscribing to the observable passed to the pipe as a parameter. Because of that Angular has to create a new instance for each pipe usage to prevent different observables affecting each other. And also has to call transform method on each digest because even thought the observable parameter may not change the new value may arrive through this observable that needs to be processed by change detection
+```ts
+// Async Pipe use
+@Component({
+  selector: 'async-promise-pipe',
+  template: `<div>
+    <code>promise|async</code>:
+    <button (click)="clicked()">{{ arrived ? 'Reset' : 'Resolve' }}</button>
+    <span>Wait for it... {{ greeting | async }}</span>
+  </div>`
+})
+export class AsyncPromisePipeComponent {
+  greeting: Promise<string>|null = null;
+  arrived: boolean = false;
+
+  private resolve: Function|null = null;
+
+  constructor() {
+    this.reset();
+  }
+
+  reset() {
+    this.arrived = false;
+    this.greeting = new Promise<string>((resolve, reject) => {
+      this.resolve = resolve;
+    });
+  }
+
+  clicked() {
+    if (this.arrived) {
+      this.reset();
+    } else {
+      this.resolve!('hi there!');
+      this.arrived = true;
+    }
+  }
+}
+```
+
+
+### HttpClient/HttpBackend
+* If you have HttpClient at submodule level then it will over write the HttpClinet at app level
+* If you want to neglact HttpInterceptors, use HttpBackend
+
+### WHY IVY
+* From version 9
+* AOT compilation with Ivy is faster and should be used by default. In the angular.json workspace configuration file, set the default build options for your project to always use AOT compilation
+* Ivy applications can be built with libraries that were created with the View Engine compiler. This compatibility is provided by a tool known as the Angular compatibility compiler (**ngcc**). CLI commands run ngcc as needed when performing an Angular build.
+* With Ivy, you can compile components more independently of each other. This improves development times since recompiling an application will only involve compiling the components that changed
+* Tree Shaking: It means that unused code is not included in a build during the build process, for example if you don’t need "views queries" you don’t need the Angular Framework code that updates these queries on browsers. "This is where the bundle size reduction comes from"
+* Bootstrapping: Ivy provides a simpler API now to bootstrap a component. In existing implementation we need to use NgModule, that defines a component to bootstrap an application with.
+```ts
+		@NgModule({
+			…
+			bootstrap: [AppComponent]
+		})
+		export class AppModule {}
+		platformBrowserDynamic().bootstrapModule(AppModule);
+		
+		In Ivy, the bootstrap function takes this bootstrap component directly:
+		renderComponent(AppComponent)
+```
+
+
+
 
 
 
