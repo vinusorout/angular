@@ -264,7 +264,162 @@ export class AsyncPromisePipeComponent {
 		renderComponent(AppComponent)
 ```
 
+## RxJS
 
+### Observable
+* of('Word'),
+* map like the array .map => of([0,1,23]).map(x => x+1).filter(x > 10)
+* map is an operator that transforms data by applying a function
+* pipe composes operators (like map, filter, etc)
+* Unlike **map**, which is an **operator**, **pipe** is a method on Observable which is used for **composing operators**. pipe was introduced to RxJS in v5.5 to take code that looked like this
+```ts
+of(1,2,3).map(x => x + 1).filter(x => x > 2);
+```
+to
+```ts
+of(1,2,3).pipe(
+  map(x => x + 1),
+  filter(x => x > 2)
+);
+```
+
+* **forkJoin**, to call APis/observables parallely and clud results
+```ts
+forkJoin([
+      this.service.method1(param1),
+      this.service.method2(param2)
+    ])
+      .subscribe(response => {
+        console.log(response[0]);
+        console.log(response[1]);
+      });
+```
+* ForkJoin operator faces some problems with delayed requests too. The order will be preserved but if one request is delayed all the others have to wait for its resolution
+* Another issue with forkJoin() is related to the way it handles failed requests. If any of the executed requests fails it will fail for the whole collection. Instead of items we will receive first encountered exception
+* MergeMap() executes requests in parallel and it is fault tolerant so we still display most of the posts even if some of the requests fail. Order is not maintained in MergeMap.
+
+* **concatMap**
+* concatMap(): Projects each source value to an Observable which is merged in the output Observable, in a serialized fashion waiting for each one to complete before merging the next
+* No parallel calls
+* In our case we want to perform a HTTP request for every ID and Angular HttpClient returns observable of a response by default
+```ts
+getItems(ids: number[]): Observable<Item> {
+  return from(ids).pipe(
+     concatMap(id => <Observable<Item>> this.httpClient.get(`item/${id}`))
+  );
+}
+```
+
+* **mergeMap**
+* it executes all nested observables immediately as they pass through the stream. This is a major performance win because all our requests are executed in parallel
+```ts
+getItems(ids: number[]): Observable<Item> {
+  return from(ids).pipe(
+    mergeMap(id => <Observable<Item>> this.httpClient.get(`item/${id}`))
+  );
+}
+```
+
+## Directive (Attribute directives)
+* With attribute directives, you can change the appearance or behavior of DOM elements and Angular components.
+```sh
+ng generate directive highlight
+```
+* highlight directive ex:
+```ts
+import { Directive, ElementRef } from '@angular/core';
+
+@Directive({
+  selector: '[appHighlight]'
+})
+export class HighlightDirective {
+    constructor(el: ElementRef) {
+       el.nativeElement.style.backgroundColor = 'yellow';
+    }
+}
+```
+
+```html
+<p appHighlight>Highlight me!</p>
+```
+
+### Handling user events Using HostListener
+```ts
+import { Directive, ElementRef, HostListener } from '@angular/core';
+
+@Directive({
+  selector: '[appHighlight]'
+})
+export class HighlightDirective {
+    constructor(el: ElementRef) {
+       el.nativeElement.style.backgroundColor = 'yellow';
+    }
+    @HostListener('mouseenter') onMouseEnter() {
+	  this.highlight('yellow');
+	}
+
+	@HostListener('mouseleave') onMouseLeave() {
+	  this.highlight('');
+	}
+
+	private highlight(color: string) {
+	  this.el.nativeElement.style.backgroundColor = color;
+	}
+}
+```
+
+### Passing values into an attribute directive, Using Input
+```ts
+import { Directive, ElementRef, HostListener, Input } from '@angular/core';
+
+@Directive({
+  selector: '[appHighlight]'
+})
+export class HighlightDirective {
+    @Input() appHighlight = '';
+    constructor(el: ElementRef) {
+       el.nativeElement.style.backgroundColor = appHighlight;
+    }
+}
+```
+```html
+<p [appHighlight]="color">Highlight me!</p>
+```
+### Passing multiple values
+```ts
+import { Directive, ElementRef, HostListener, Input } from '@angular/core';
+
+@Directive({
+  selector: '[appHighlight]'
+})
+export class HighlightDirective {
+    @Input() appHighlight = '';
+    @Input() defaultColor = '';
+    constructor(el: ElementRef) {
+       el.nativeElement.style.backgroundColor = appHighlight;
+    }
+}
+```
+```html
+<p [appHighlight]="color" defaultColor="violet">
+  Highlight me too!
+</p>
+```
+
+### ngNonBindable, directive
+* To prevent expression evaluation in the browser, add ngNonBindable to the host element. ngNonBindable deactivates interpolation, directives, and binding in templates
+```html
+<p ngNonBindable>This should not evaluate: {{ 1 + 1 }}</p>
+```
+* If you apply ngNonBindable to a parent element, Angular disables interpolation and binding of any sort, such as property binding or event binding, for the element's children.
+
+
+## ngTemplate and ngContent
+
+
+## UNIT TESTING
+
+### Service with HttpClient:
 
 
 
