@@ -67,6 +67,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 })
 export class HelloComponent implements OnChanges {
 // nubmer with ngOnChanges method
+// USE ngOnChanges METHOD IF YOU NEED TO EXECUTE ANY METHOD OF CHILD COMPONENT WHEN ANY INPUT VALYES CHANGES.
 ngOnChanges(changes: SimpleChanges): void {
   console.log('change detected');
   for (let propName in changes) {
@@ -160,7 +161,19 @@ export class AppComponent implements  AfterViewInit {
 }
 ```
 
+### Using ViewChild with a component, that is used in a parent component.
 
+```ts
+export class AppComponent implements OnInit {
+  .
+  .
+  .
+  @ViewChild(ChildComponent) canvasMap: ChildComponent | undefined;
+  .
+  .
+  .
+}
+```
 
 
 
