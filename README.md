@@ -507,6 +507,112 @@ describe('MyService', () => {
 
 ```
 
+### Components
+```ts
+import { DebugElement } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { By } from '@angular/platform-browser';
+import { ButtonModule } from 'primeng/button';
+import { Dropdown, DropdownModule } from 'primeng/dropdown';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
+import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { Observable } from 'rxjs/internal/Observable';
+import { of } from 'rxjs/internal/observable/of';
+import { MyService } from 'src/app/shared/services/facility/facility.service';
+
+import { MyComponent } from './my.component';
+  // My Service
+  let mockedMyService: Partial<MyService>;
+
+describe('MyComponent', () => {
+  let component: MyComponent;
+  let fixture: ComponentFixture<MyComponent>;
+
+  beforeEach(async () => {
+    mockedMyService = {
+      onMyData: new BehaviorSubject<any>(null),
+    };
+    await TestBed.configureTestingModule({
+      declarations: [ MyComponent ],
+      providers: [ 
+        { provide: MyService, useValue: mockedMyService }
+      ],
+      imports:[
+        InputTextModule,
+        InputNumberModule,
+        DropdownModule,
+        ButtonModule,
+        FormsModule
+      ]
+    })
+    .compileComponents();
+  });
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(MyComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('verify input values on change ', async () => {
+    let myMockedService = fixture.debugElement.injector.get(MyService);
+    spyOn(myMockedService, 'addData').and.callFake(() => of([]));
+    
+    await fixture.whenStable();
+    const data: Data = {'CC':10,'FI':263,'PC':0,'PR':0,'TI':69,'TN':'J-10','TT':'Storage', 'LC': 0};
+
+    const dropdown: Dropdown = fixture.debugElement.query(By.css('p-dropdown')).componentInstance;
+    
+    component.editData = data;
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const name: DebugElement = fixture.debugElement.query(By.css('input[id=tN]'));
+    expect(name.nativeElement.value).toBe(data.TN);
+    // name.triggerEventHandler('input', { target: { value: data.TN } });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const widthEl: DebugElement = fixture.debugElement.query(By.css('p-inputNumber[id=tL] input'));
+    expect(widthEl.nativeElement.value).toBe(data.CC.toString());
+    const verticalEl: DebugElement = fixture.debugElement.query(By.css('p-inputNumber[id=v] input'));
+    expect(verticalEl.nativeElement.value).toBe(component.editData.PR.toString());
+    const horizontalEl: DebugElement = fixture.debugElement.query(By.css('p-inputNumber[id=h] input'));
+    expect(horizontalEl.nativeElement.value).toBe(component.editData.PC.toString());
+    
+    // horizontalEl.triggerEventHandler('blur', null);
+    // dropdown.selectItem(new Event('change'), data.TT);
+    
+    expect(dropdown.selectedOption).toBe(component.editData.TT.toString());
+    
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    // get the Cancel Button Elemet element
+    const saveButtonEl: DebugElement = fixture.debugElement.query(By.css('button[label=Save]'));
+
+    // subscribe to the emmiter
+    let dataReturned = 0;
+    myMockedService.onDataChange?.subscribe(value => facilityReturned = value);
+
+    // trigger the event
+    saveButtonEl.triggerEventHandler('click', null);
+
+    expect(dataReturned).toBe(1);
+    expect(myMockedService.addTrack).toHaveBeenCalled();
+  });
+
+});
+
+```
+
+
+
 
 
 
