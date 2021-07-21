@@ -301,6 +301,26 @@ To solve this move the code to a shared service.
 ```
 
 ### Multiple components match node with tagname {selector}
+* the selector name inside a module should be unique
+
+### Export of name {directive} not found
+* example: Export of name 'ngForm' not found
+```html
+<form #form="ngForm"></form>
+```
+Can be fixed by importing the required module:
+```ts
+import {FormsModule } ...
+.
+.
+.
+imports: [
+	FormsModule
+]
+.
+.
+.
+```
 
 
 
