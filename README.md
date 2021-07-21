@@ -1,6 +1,37 @@
 # angular
 Angular Personal Learning
 
+## Life Cycles Hooks:
+
+* **ngOnChanges**: When an input/output binding value changes.
+	* Called before ngOnInit() (if the component has bound inputs) and whenever one or more data-bound input properties change.
+	* Note that if your component has no inputs or you use it without providing any inputs, the framework will not call ngOnChanges()
+* **ngOnInit**: After the first ngOnChanges.
+	* Initialize the directive or component
+	* ngOnInit() is still called even when ngOnChanges() is not (which is the case when there are no template-bound inputs)
+* **ngDoCheck**: Developer's custom change detection.
+	* Detect and act upon changes that Angular can't or won't detect on its own
+	* Called immediately after ngOnChanges() on every change detection run, and immediately after ngOnInit() on the first run
+* **ngAfterContentInit**: After component content initialized.
+* **ngAfterContentChecked**: After every check of component content.
+* **ngAfterViewInit**: After a component's views are initialized.
+	* Respond after Angular initializes the component's views and child views, or the view that contains the directive.
+```ts
+...
+// Query for a VIEW child of type `ChildViewComponent`
+  @ViewChild(ChildViewComponent) viewChild!: ChildViewComponent;
+
+  ngAfterViewInit() {
+    // viewChild is set after the view has been initialized
+    this.logIt('AfterViewInit');
+    this.doSomething();
+  }
+  ...
+```
+* **ngAfterViewChecked**: After every check of a component's views.
+* **ngOnDestroy**: Just before the directive is destroyed.
+	* To unsbscribe from the promises, to minimize the memory leak.
+
 ## Services
 * Injectable need to know where to make the class available, like root of the application or feature module
 * And a token, the class name is used as Token.
