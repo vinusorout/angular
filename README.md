@@ -69,6 +69,85 @@ export class Storage {
 }
 ```
 
+## Forms
+
+### Reactive Form (least used)
+```ts
+import { Component } from '@angular/core';
+import { FormControl } from '@angular/forms';
+
+@Component({
+  selector: 'app-reactive-favorite-color',
+  template: `
+    Favorite Color: <input type="text" [formControl]="favoriteColorControl">
+  `
+})
+export class FavoriteColorComponent {
+  favoriteColorControl = new FormControl('');
+}
+```
+
+### Template driven form
+```ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-template-favorite-color',
+  template: `
+    Favorite Color: <input type="text" [(ngModel)]="favoriteColor">
+  `
+})
+export class FavoriteColorComponent {
+  favoriteColor = '';
+}
+```
+
+Form Validations of template driven form:
+```html
+<input type="text" id="name" name="name" class="form-control"
+      required minlength="4" appForbiddenName="bob"
+      [(ngModel)]="hero.name" #name="ngModel">
+
+<div *ngIf="name.invalid && (name.dirty || name.touched)"
+    class="alert">
+
+  <div *ngIf="name.errors?.required">
+    Name is required.
+  </div>
+  <div *ngIf="name.errors?.minlength">
+    Name must be at least 4 characters long.
+  </div>
+  <div *ngIf="name.errors?.forbiddenName">
+    Name cannot be Bob.
+  </div>
+
+</div>
+```
+
+Adding custom validators to template-driven forms
+```ts
+@Directive({
+  selector: '[appForbiddenName]',
+  providers: [{provide: NG_VALIDATORS, useExisting: ForbiddenValidatorDirective, multi: true}]
+})
+export class ForbiddenValidatorDirective implements Validator {
+  @Input('appForbiddenName') forbiddenName = '';
+
+  validate(control: AbstractControl): ValidationErrors | null {
+    return this.forbiddenName ? forbiddenNameValidator(new RegExp(this.forbiddenName, 'i'))(control)
+                              : null;
+  }
+}
+```
+```html
+<input type="text" id="name" name="name" class="form-control"
+      required minlength="4" appForbiddenName="bob"
+      [(ngModel)]="hero.name" #name="ngModel">
+```
+
+
+
+
 
 ## Parent to child OR Child to parent interation:
 https://angular.io/guide/component-interaction
