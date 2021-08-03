@@ -325,6 +325,8 @@ export class AppComponent implements OnInit {
 
 ## Importants
 
+## More than one structural directives (*ngFor, *ngIf) can not be applied on a single HTML element.
+
 ### ExpressionChangesAfterItHasBeenCheckedError
 * Occured when a value was modified AFTER change detection finished.
 * Potential causes:
