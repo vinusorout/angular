@@ -146,7 +146,45 @@ export class ForbiddenValidatorDirective implements Validator {
 ```
 
 
+## Animations, BrowserAnimationModule
 
+Angular 12 div zoom in zoom out:
+
+``ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-template-favorite-color',
+  template: `
+  <div [@zoomInOut]="{value: isZoomedIn ? 'zoomIn' : 'zoomOut' , params: {scalef: scaledFactor} }">
+    Favorite Color: <input type="text" [(ngModel)]="favoriteColor">
+  </div>
+  `,
+  animations: [
+        trigger('zoomInOut', [
+            state('zoomIn', style({
+                'transform-origin': '0 0',
+                transform: 'scale({{scalef}}, 1)',
+            }), {params: {scalef: 1}}),
+            state('zoomOut', style({
+                'transform-origin': '0 0',
+                transform: 'scale({{scalef}}, 1)'
+            }), {params: {scalef: 1}}),
+            transition('zoomIn => zoomOut', [
+                animate('.25s')
+            ]),
+            transition('zoomOut => zoomIn', [
+                animate('.25s')
+            ]),
+        ]),
+    ]
+})
+export class FavoriteColorComponent {
+  favoriteColor = '';
+  isZoomedIn = true;
+  scaledFactor = .90;
+}
+``
 
 
 ## Parent to child OR Child to parent interation:
