@@ -150,8 +150,9 @@ export class ForbiddenValidatorDirective implements Validator {
 
 Angular 12 div zoom in zoom out:
 
-``ts
+```ts
 import { Component } from '@angular/core';
+import {trigger,state,style,animate,transition,// ...} from '@angular/animations';
 
 @Component({
   selector: 'app-template-favorite-color',
@@ -184,7 +185,7 @@ export class FavoriteColorComponent {
   isZoomedIn = true;
   scaledFactor = .90;
 }
-``
+```
 
 
 ## Parent to child OR Child to parent interation:
