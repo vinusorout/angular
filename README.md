@@ -157,19 +157,24 @@ import {trigger,state,style,animate,transition,// ...} from '@angular/animations
 @Component({
   selector: 'app-template-favorite-color',
   template: `
-  <div [@zoomInOut]="{value: isZoomedIn ? 'zoomIn' : 'zoomOut' , params: {scalef: scaledFactor} }">
+/* .inner-div-container {
+    margin: 0px 20px;
+    border: 1px solid #BDBDBD;
+    overflow: auto;
+    border-radius: 10px;
+    max-height: calc(100vh - 200px);
+}*/
+  <div class="inner-div-container">
+  <div [@zoomInOut]="{value: 'zoomIn' , params: {scalef: scaledFactor} }">
     Favorite Color: <input type="text" [(ngModel)]="favoriteColor">
+  </div>
   </div>
   `,
   animations: [
         trigger('zoomInOut', [
             state('zoomIn', style({
                 'transform-origin': '0 0',
-                transform: 'scale({{scalef}}, 1)',
-            }), {params: {scalef: 1}}),
-            state('zoomOut', style({
-                'transform-origin': '0 0',
-                transform: 'scale({{scalef}}, 1)'
+                transform: 'scale({{scalef}}, {{scalef}})',
             }), {params: {scalef: 1}}),
             transition('zoomIn => zoomOut', [
                 animate('.25s')
